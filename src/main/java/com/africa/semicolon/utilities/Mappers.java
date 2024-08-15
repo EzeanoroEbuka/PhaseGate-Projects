@@ -1,6 +1,7 @@
 package com.africa.semicolon.utilities;
 
 import com.africa.semicolon.data.models.Contact;
+import com.africa.semicolon.data.models.User;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
@@ -24,6 +25,7 @@ public class Mappers {
     }
     public static CreateContactResponse responseMapper(Contact contact) {
         CreateContactResponse response = new CreateContactResponse();
+        response.setId(contact.getId());
         response.setFirstName(contact.getFirstName());
         response.setLastName(contact.getLastName());
         response.setPhoneNumber(contact.getPhoneNumber());

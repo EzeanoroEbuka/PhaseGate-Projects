@@ -2,9 +2,10 @@ package com.africa.semicolon.service;
 
 import com.africa.semicolon.ExceptionHandling;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
+import com.africa.semicolon.dtos.request.OldDetailRequestUpdate;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
-import com.africa.semicolon.dtos.response.DeleteResponse;
+import com.africa.semicolon.dtos.response.DeleteContactResponse;
 import com.africa.semicolon.dtos.response.UpdateContactResponse;
 import com.africa.semicolon.services.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,19 +22,22 @@ public class ContactServiceTest {
     @Autowired
     private ContactServiceImpl service;
 
+
     @BeforeEach
     public void refreshDB() {
+
         service.deleteAllContact();
     }
 
     @Test
     public void ContactIsCreatedAndSavedTest() {
-        CreateContactRequest request = new CreateContactRequest();
-        request.setFirstName("John");
-        request.setLastName("Smith");
-        request.setPhoneNumber("555-555-5555");
-        CreateContactResponse newContact = service.addContact(request);
-        assertEquals(request.getPhoneNumber(), newContact.getPhoneNumber());
+        CreateContactRequest request2 = new CreateContactRequest();
+        request2.setFirstName("John");
+        request2.setLastName("Smith");
+        request2.setPhoneNumber("555-555-5555");
+        request2.setUserEmail("adam.smith@gmail.com");
+        CreateContactResponse newContact = service.addContact(request2);
+        assertEquals(request2.getPhoneNumber(), newContact.getPhoneNumber());
     }
 
     @Test
@@ -61,7 +65,9 @@ public class ContactServiceTest {
         anotherContact.setFirstName("Adam");
         anotherContact.setLastName("Satan");
         anotherContact.setPhoneNumber("999-000-666");
-        UpdateContactResponse updated = service.updateContact(anotherContact, "445-9809-988");
+        OldDetailRequestUpdate anotherDetail = new OldDetailRequestUpdate();
+        anotherDetail.setPhoneNumber("445-9809-988");
+        UpdateContactResponse updated = service.updateContact(anotherContact, anotherDetail);
         assertEquals("999-000-666", updated.getPhoneNumber());
 
     }
@@ -81,7 +87,7 @@ public class ContactServiceTest {
         anotherContact.setPhoneNumber("445");
         service.addContact(anotherContact);
         assertEquals(2, service.totalContacts());
-        DeleteResponse response = service.deleteContact("09012");
+        DeleteContactResponse response = service.deleteContact("09012");
         assertEquals("Contact Deleted Successfully", response.getMessage());
         assertEquals(1, service.totalContacts());
     }
@@ -115,7 +121,7 @@ public class ContactServiceTest {
         anotherContact.setLastName("Ethan");
         anotherContact.setPhoneNumber("999-000-666");
         service.addContact(anotherContact);
-        assertEquals(newContact.getPhoneNumber(), service.getContact(newContact.getPhoneNumber()).getPhoneNumber());
+        assertEquals(newContact.getPhoneNumber(), service.getContact("555-555-5555").getPhoneNumber());
     }
 
     @Test
@@ -130,15 +136,8 @@ public class ContactServiceTest {
         anotherContact.setFirstName("Adam");
         anotherContact.setLastName("Satan");
         anotherContact.setPhoneNumber("445-9809-988");
-        UpdateContactResponse updated = service.updateContact(anotherContact, " 45-9809-988");
-        assertEquals("Contact Already Exists", updated.getMessage());
-
-//        Throwable exception = assertThrows(ExceptionHandling.class, () -> {
-//            throw new ExceptionHandling("Contact Already Exists");
-//        });
-//        assertEquals("Contact Already Exists", exception.getMessage());
-//}
+        OldDetailRequestUpdate anotherDetail = new OldDetailRequestUpdate();
+        anotherDetail.setPhoneNumber("445-9809-988");
+        assertThrows(ExceptionHandling.class, ()->service.updateContact(anotherContact, anotherDetail));
     }
-
-
 }

@@ -3,62 +3,67 @@ package com.africa.semicolon.services;
 import com.africa.semicolon.ExceptionHandling;
 import com.africa.semicolon.data.models.Contact;
 import com.africa.semicolon.data.repositories.ContactRepository;
+import com.africa.semicolon.data.repositories.UserRepository;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
+import com.africa.semicolon.dtos.request.OldDetailRequestUpdate;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
-import com.africa.semicolon.dtos.response.DeleteResponse;
+import com.africa.semicolon.dtos.response.DeleteContactResponse;
 import com.africa.semicolon.dtos.response.UpdateContactResponse;
 import com.africa.semicolon.utilities.Mappers;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-@AllArgsConstructor
 public class ContactServiceImpl implements ContactService {
 
-    private final ContactRepository repository;
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private ContactRepository repository;
+
     @Override
     public CreateContactResponse addContact(CreateContactRequest request) {
-
         if(ContactNumberIsNotPresent(request.getPhoneNumber())) {
             Contact contact = Mappers.requestMapper(request);
             repository.save(contact);
             return Mappers.responseMapper(contact);
         }
-        throw new IllegalArgumentException("Contact Phone number Already Exist");
+    throw new IllegalArgumentException("Contact Phone number Already Exist");
     }
+
     private boolean ContactNumberIsNotPresent(String phoneNumber) {
         Contact foundContact = validateContactNumber(phoneNumber);
         return foundContact == null;
     }
+
     private Contact validateContactNumber(String phoneNumber) {
-        return repository.findByPhoneNumber(phoneNumber);
+        return contactExists(phoneNumber);
     }
 
     @Override
-    public UpdateContactResponse updateContact(UpdateContactRequest update , String phoneNumber) {
+    public UpdateContactResponse updateContact(UpdateContactRequest update, OldDetailRequestUpdate secondRequest) {
 
         UpdateContactResponse response = new UpdateContactResponse();
 
-        Contact foundContact = repository.findByPhoneNumber(update.getPhoneNumber());
+        Contact foundContact = contactExists(update.getPhoneNumber());
         if(foundContact != null) {
-            response.setMessage("Contact Already Exists");
-            return response;
-           // throw new ExceptionHandling("Contact Already Exists");
+            throw new ExceptionHandling("Contact Already Exists");
         }
-        Contact foundContactTwo = repository.findByPhoneNumber(phoneNumber);
-        if(foundContactTwo != null) {
-            Contact updatedDetails = Mappers.updateMapper(update, foundContactTwo);
-            updatedDetails = repository.save(updatedDetails);
-            return Mappers.responseUpdateMapper(response,updatedDetails);
+        Contact foundContactTwo = contactExists(secondRequest.getPhoneNumber());
+        if(foundContactTwo == null) {
+            throw new ExceptionHandling("Contact Not Found");
         }
-        else  {
-            throw new IllegalArgumentException("Contact Not Found");
-        }
+        Contact updatedDetails = Mappers.updateMapper(update, foundContactTwo);
+        updatedDetails = repository.save(updatedDetails);
+        return Mappers.responseUpdateMapper(response,updatedDetails);
+
     }
     @Override
-    public DeleteResponse deleteContact(String phoneNumber) {
-        DeleteResponse response = new DeleteResponse();
+    public DeleteContactResponse deleteContact(String phoneNumber) {
+        DeleteContactResponse response = new DeleteContactResponse();
         Contact foundContact = validateContactNumber(phoneNumber);
 
         if(foundContact != null){
@@ -88,13 +93,13 @@ public class ContactServiceImpl implements ContactService {
     public Long totalContacts() {
         return repository.count();
     }
+
+    @Override
+    public List<Contact> getAllContacts() {
+        return repository.findAll();
+    }
+    public Contact contactExists(String email) {
+        return repository.findByPhoneNumber(email);
+
+    }
 }
-
-
-//    public Either<String, Integer> divide(int x, int y) {
-//        if (y == 0) {
-//            return Either.left("Cannot divide by zero");
-//        } else {
-//            return Either.right(x / y);
-//        }
-//    }

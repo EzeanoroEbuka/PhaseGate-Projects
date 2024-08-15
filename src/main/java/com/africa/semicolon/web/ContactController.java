@@ -3,6 +3,7 @@ package com.africa.semicolon.web;
 
 import com.africa.semicolon.data.models.Contact;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
+import com.africa.semicolon.dtos.request.OldDetailRequestUpdate;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
 import com.africa.semicolon.dtos.response.GetController;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping()
+@RequestMapping
 public class ContactController {
 
     private final ContactService contactService;
@@ -54,8 +55,8 @@ public class ContactController {
         }
     }
 
-    @PatchMapping("/update/{phoneNumber}")
-    public ResponseEntity<?> updateContact(@RequestBody UpdateContactRequest contactRequest, @PathVariable("phoneNumber") String phoneNumber) {
+    @PatchMapping("/update/")
+    public ResponseEntity<?> updateContact(@RequestBody UpdateContactRequest contactRequest, @RequestBody OldDetailRequestUpdate phoneNumber) {
 
         try{
             UpdateContactResponse response = contactService.updateContact(contactRequest, phoneNumber);

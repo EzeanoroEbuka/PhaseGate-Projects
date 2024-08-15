@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class DeleteRequest {
+public class OldDetailRequestUpdate {
+
     private String phoneNumber;
     private String userEmail;
-
 }
