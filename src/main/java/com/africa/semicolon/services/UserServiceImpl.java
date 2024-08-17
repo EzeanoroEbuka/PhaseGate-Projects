@@ -26,19 +26,16 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             return MapperForUsers.responseForSignUp(user);
         }
-        throw new ExceptionHandling("You Already Have An Account With this Email");
+        throw new ExceptionHandling("Account Already Exist");
     }
 
     @Override
     public CreateContactResponse createContact(CreateContactRequest request) {
-        Contact contact = new Contact();
+
         if(userExists(request.getUserEmail())){
             User foundUser = userFound(request.getUserEmail());
             CreateContactResponse response  = contactService.addContact(request);
-            contact.setFirstName(response.getFirstName());
-            contact.setLastName(response.getLastName());
-            contact.setPhoneNumber(response.getPhoneNumber());
-            contact.setId(response.getId());
+            Contact contact = MapperForUsers.createContactMapping(response);
             foundUser.getContacts().add(contact);
             userRepository.save(foundUser);
             return response;
