@@ -6,8 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateContactRequest {
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
-
+    private String newFirstName;
+    private String newLastName;
+    private String oldPhoneNumber;
+    private String newPhoneNumber;
+    private String userEmail;
 }

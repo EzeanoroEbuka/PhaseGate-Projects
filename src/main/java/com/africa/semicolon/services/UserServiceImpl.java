@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CreateContactResponse createContact(CreateContactRequest request) {
 
-        if(userExists(request.getUserEmail())){
+        if(userExistAndIsLoggedIn(request.getUserEmail())){
             User foundUser = userFound(request.getUserEmail());
             CreateContactResponse response  = contactService.addContact(request);
             Contact contact = MapperForUsers.createContactMapping(response);
@@ -40,13 +40,12 @@ public class UserServiceImpl implements UserService {
             userRepository.save(foundUser);
             return response;
         }
-        throw new ExceptionHandling("You Have No Account For this Email...pls sign in");
+        throw new ExceptionHandling("You Have No Account For this Email...pls sign in or log in");
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
         LoginResponse loginResponse = new LoginResponse();
-
         if(userExists(request.getEmail())){
             User user = userFound(request.getEmail());
             if (user.getPassword().equals(request.getPassword())) {
@@ -65,8 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LogOutResponse logOut(LogOutRequest request) {
         LogOutResponse response = new LogOutResponse();
-
-        if(userExists(request.getEmail())){
+        if(userExistAndIsLoggedIn(request.getEmail())){
             User user = userFound(request.getEmail());
             user.setLoggedIn(false);
             userRepository.save(user);
@@ -88,9 +86,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UpdateContactResponse updateContact(UpdateContactRequest request,OldDetailRequestUpdate secondRequest) {
-        User user = userFound(secondRequest.getUserEmail());
-        return contactService.updateContact(request,secondRequest);
+    public UpdateContactResponse updateContact(UpdateContactRequest request) {
+        User user = userFound(request.getUserEmail());
+        return contactService.updateContact(request);
 
     }
 
@@ -148,7 +146,13 @@ public class UserServiceImpl implements UserService {
                return contact;
            }
        }
-    return null;
+    throw new ExceptionHandling("Wrong Contact Number");
 
+    }
+    private  boolean userExistAndIsLoggedIn(String email){
+        if(userExists(email)){
+            return userFound(email).isLoggedIn();
+        }
+        return false;
     }
 }

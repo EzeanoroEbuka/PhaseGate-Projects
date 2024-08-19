@@ -1,5 +1,6 @@
 package com.africa.semicolon.service;
 
+import com.africa.semicolon.ExceptionHandling;
 import com.africa.semicolon.dtos.request.*;
 import com.africa.semicolon.dtos.response.*;
 import com.africa.semicolon.services.ContactService;
@@ -39,10 +40,11 @@ public class UserServiceTest {
         request.setEmail("adam.smith@gmail.com");
         request.setPassword("password");
         SignUpResponse response = userService.signUp(request);
-        assertEquals(request.getFirstName(),response.getFirstName());
-        assertEquals("Successfully Signed Up",response.getMessage());
-        assertEquals(1,userService.getAllUsers().getUsers().size());
+        assertEquals(request.getFirstName(), response.getFirstName());
+        assertEquals("Successfully Signed Up", response.getMessage());
+        assertEquals(1, userService.getAllUsers().getUsers().size());
     }
+
     @Test
     public void testThatUserCanBeLoggedOutAfterSignedIn() {
         SignUpRequest request = new SignUpRequest();
@@ -54,7 +56,7 @@ public class UserServiceTest {
         LogOutRequest request1 = new LogOutRequest();
         request1.setEmail("adam.smith@gmail.com");
         LogOutResponse response1 = userService.logOut(request1);
-        assertEquals("Successfully Logged Out",response1.getMessage());
+        assertEquals("Successfully Logged Out", response1.getMessage());
     }
 
     @Test
@@ -72,7 +74,7 @@ public class UserServiceTest {
         request2.setEmail("adam.smith@gmail.com");
         request2.setPassword("password");
         LoginResponse response2 = userService.login(request2);
-        assertEquals(response2.getMessage(),"Successfully LoggedIn");
+        assertEquals(response2.getMessage(), "Successfully LoggedIn");
     }
 
     @Test
@@ -89,10 +91,10 @@ public class UserServiceTest {
         contactRequest.setPhoneNumber("07031475772");
         contactRequest.setUserEmail("adam.smith@gmail.com");
         CreateContactResponse newContact = userService.createContact(contactRequest);
-        assertEquals(newContact.getPhoneNumber(),"07031475772");
-        GetUserContacts details =  new GetUserContacts();
+        assertEquals(newContact.getPhoneNumber(), "07031475772");
+        GetUserContacts details = new GetUserContacts();
         details.setUserEmail("adam.smith@gmail.com");
-        assertEquals(1,userService.getAllUserContacts(details).getContacts().size());
+        assertEquals(1, userService.getAllUserContacts(details).getContacts().size());
     }
 
     @Test
@@ -112,9 +114,9 @@ public class UserServiceTest {
         DeleteRequest deleteRequest = new DeleteRequest();
         deleteRequest.setUserEmail("adam.smith@gmail.com");
         userService.deleteAllContacts(deleteRequest);
-        GetUserContacts details =  new GetUserContacts();
+        GetUserContacts details = new GetUserContacts();
         details.setUserEmail("adam.smith@gmail.com");
-        assertEquals(0,userService.getAllUserContacts(details).getContacts().size());
+        assertEquals(0, userService.getAllUserContacts(details).getContacts().size());
     }
 //
 //    @Test
@@ -155,15 +157,33 @@ public class UserServiceTest {
         contactRequest.setUserEmail("adam.smith@gmail.com");
         CreateContactResponse newContact = userService.createContact(contactRequest);
         UpdateContactRequest requestUpdate = new UpdateContactRequest();
-        requestUpdate.setFirstName("Luke");
-        requestUpdate.setLastName("fisher");
-        requestUpdate.setPhoneNumber("09031475772");
-        OldDetailRequestUpdate requestUpdateTwo = new OldDetailRequestUpdate();
-        requestUpdateTwo.setUserEmail("adam.smith@gmail.com");
-        requestUpdateTwo.setPhoneNumber("07031475772");
-        UpdateContactResponse response = userService.updateContact(requestUpdate, requestUpdateTwo);
-        assertEquals(response.getMessage(),"Contact Updated Successfully");
-        assertEquals(response.getPhoneNumber(),"09031475772");
+        requestUpdate.setNewFirstName("Luke");
+        requestUpdate.setNewLastName("fisher");
+        requestUpdate.setNewPhoneNumber("09031475772");
+        requestUpdate.setUserEmail("adam.smith@gmail.com");
+        requestUpdate.setOldPhoneNumber("07031475772");
+        UpdateContactResponse response = userService.updateContact(requestUpdate);
+        assertEquals(response.getMessage(), "Contact Updated Successfully");
+        assertEquals(response.getPhoneNumber(), "09031475772");
 
+    }
+
+    @Test
+    public void testThatUserCannotCreateContactWhenTheyAreNotLoggedIn() {
+        SignUpRequest request = new SignUpRequest();
+        request.setFirstName("Adam");
+        request.setLastName("Smith");
+        request.setEmail("adam.smith@gmail.com");
+        request.setPassword("password");
+        userService.signUp(request);
+        LogOutRequest request1 = new LogOutRequest();
+        request1.setEmail("adam.smith@gmail.com");
+        userService.logOut(request1);
+        CreateContactRequest contactRequest = new CreateContactRequest();
+        contactRequest.setFirstName("Matthew");
+        contactRequest.setLastName("fisher");
+        contactRequest.setPhoneNumber("07031475772");
+        contactRequest.setUserEmail("adam.smith@gmail.com");
+        assertThrows(ExceptionHandling.class, () -> userService.createContact(contactRequest));
     }
 }

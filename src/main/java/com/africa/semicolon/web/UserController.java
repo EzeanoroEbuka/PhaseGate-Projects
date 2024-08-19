@@ -1,5 +1,6 @@
 package com.africa.semicolon.web;
 
+import com.africa.semicolon.data.models.Contact;
 import com.africa.semicolon.dtos.request.*;
 import com.africa.semicolon.dtos.response.*;
 import com.africa.semicolon.services.UserService;
@@ -46,7 +47,6 @@ public class UserController {
                 return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
             }
         }
-
         @PostMapping("/user/create")
         public ResponseEntity<?> createContact(@RequestBody CreateContactRequest contactRequest) {
 
@@ -59,17 +59,17 @@ public class UserController {
             }
         }
 
-//        @GetMapping("/get/{phoneNumber}")
-//        public ResponseEntity<?> getContact(@PathVariable ("phoneNumber") String phoneNumber) {
-//
-//            try {
-//                Contact contact = userService.getContact(phoneNumber);
-//                return new ResponseEntity<>(new GetController(contact.getFirstName(),contact.getLastName(),contact.getPhoneNumber()),HttpStatus.FOUND);
-//            }
-//            catch (Exception e) {
-//                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//            }
-//        }
+        @GetMapping("/get")
+        public ResponseEntity<?> getContact(@RequestBody GetUserContacts request) {
+
+            try {
+                Contact contact = userService.getUserContact(request);
+                return new ResponseEntity<>(new GetController(contact.getFirstName(),contact.getLastName(),contact.getPhoneNumber()),HttpStatus.FOUND);
+            }
+            catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
 
         @DeleteMapping("/user/delete/")
         public ResponseEntity<?> deleteContact(@RequestBody DeleteRequest request) {
@@ -82,10 +82,10 @@ public class UserController {
         }
 
         @PatchMapping("/user/update")
-        public ResponseEntity<?> updateContact(@RequestBody UpdateContactRequest contactRequest, @RequestBody OldDetailRequestUpdate request) {
+        public ResponseEntity<?> updateContact(@RequestBody UpdateContactRequest contactRequest) {
 
             try{
-                UpdateContactResponse response = userService.updateContact(contactRequest, request);
+                UpdateContactResponse response = userService.updateContact(contactRequest);
                 return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
             }
             catch (Exception e) {

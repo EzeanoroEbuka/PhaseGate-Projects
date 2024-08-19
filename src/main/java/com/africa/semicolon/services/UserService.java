@@ -11,7 +11,7 @@ public interface UserService {
     SignUpResponse signUp(SignUpRequest request);
     CreateContactResponse createContact(CreateContactRequest request);
     DeleteContactResponse deleteAllContacts(DeleteRequest request);
-    UpdateContactResponse updateContact(UpdateContactRequest request,OldDetailRequestUpdate secondRequest);
+    UpdateContactResponse updateContact(UpdateContactRequest request);
     DeleteContactResponse  deleteContact(DeleteRequest request);
     DeleteUserResponse deleteAllUser();
     ListOfUser getAllUsers();
