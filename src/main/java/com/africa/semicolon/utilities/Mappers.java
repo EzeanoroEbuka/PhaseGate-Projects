@@ -9,9 +9,9 @@ import com.africa.semicolon.dtos.response.UpdateContactResponse;
 
 public class Mappers {
     public static Contact updateMapper(UpdateContactRequest newContact, Contact foundContact) {
-        foundContact.setFirstName(newContact.getFirstName());
-        foundContact.setLastName(newContact.getLastName());
-        foundContact.setPhoneNumber(newContact.getPhoneNumber());
+        foundContact.setFirstName(newContact.getNewFirstName());
+        foundContact.setLastName(newContact.getNewLastName());
+        foundContact.setPhoneNumber(newContact.getNewPhoneNumber());
 
         return foundContact;
     }

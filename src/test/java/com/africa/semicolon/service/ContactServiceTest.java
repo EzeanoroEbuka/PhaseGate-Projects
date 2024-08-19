@@ -2,7 +2,6 @@ package com.africa.semicolon.service;
 
 import com.africa.semicolon.ExceptionHandling;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
-import com.africa.semicolon.dtos.request.OldDetailRequestUpdate;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
 import com.africa.semicolon.dtos.response.DeleteContactResponse;
@@ -62,12 +61,11 @@ public class ContactServiceTest {
         contact.setPhoneNumber("445-9809-988");
         service.addContact(contact);
         UpdateContactRequest anotherContact = new UpdateContactRequest();
-        anotherContact.setFirstName("Adam");
-        anotherContact.setLastName("Satan");
-        anotherContact.setPhoneNumber("999-000-666");
-        OldDetailRequestUpdate anotherDetail = new OldDetailRequestUpdate();
-        anotherDetail.setPhoneNumber("445-9809-988");
-        UpdateContactResponse updated = service.updateContact(anotherContact, anotherDetail);
+        anotherContact.setNewFirstName("Adam");
+        anotherContact.setNewLastName("Satan");
+        anotherContact.setNewPhoneNumber("999-000-666");
+        anotherContact.setOldPhoneNumber("445-9809-988");
+        UpdateContactResponse updated = service.updateContact(anotherContact);
         assertEquals("999-000-666", updated.getPhoneNumber());
 
     }
@@ -133,11 +131,10 @@ public class ContactServiceTest {
         service.addContact(contact);
         assertEquals(1, service.totalContacts());
         UpdateContactRequest anotherContact = new UpdateContactRequest();
-        anotherContact.setFirstName("Adam");
-        anotherContact.setLastName("Satan");
-        anotherContact.setPhoneNumber("445-9809-988");
-        OldDetailRequestUpdate anotherDetail = new OldDetailRequestUpdate();
-        anotherDetail.setPhoneNumber("445-9809-988");
-        assertThrows(ExceptionHandling.class, ()->service.updateContact(anotherContact, anotherDetail));
+        anotherContact.setNewFirstName("Adam");
+        anotherContact.setNewLastName("Satan");
+        anotherContact.setNewPhoneNumber("445-9809-988");
+        anotherContact.setOldPhoneNumber("445-9809-988");
+        assertThrows(ExceptionHandling.class, ()->service.updateContact(anotherContact));
     }
 }

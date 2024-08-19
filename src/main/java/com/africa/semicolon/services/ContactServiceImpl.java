@@ -5,7 +5,6 @@ import com.africa.semicolon.data.models.Contact;
 import com.africa.semicolon.data.repositories.ContactRepository;
 import com.africa.semicolon.data.repositories.UserRepository;
 import com.africa.semicolon.dtos.request.CreateContactRequest;
-import com.africa.semicolon.dtos.request.OldDetailRequestUpdate;
 import com.africa.semicolon.dtos.request.UpdateContactRequest;
 import com.africa.semicolon.dtos.response.CreateContactResponse;
 import com.africa.semicolon.dtos.response.DeleteContactResponse;
@@ -44,15 +43,15 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public UpdateContactResponse updateContact(UpdateContactRequest update, OldDetailRequestUpdate secondRequest) {
+    public UpdateContactResponse updateContact(UpdateContactRequest update) {
 
         UpdateContactResponse response = new UpdateContactResponse();
 
-        Contact foundContact = contactExists(update.getPhoneNumber());
+        Contact foundContact = contactExists(update.getNewPhoneNumber());
         if(foundContact != null) {
-            throw new ExceptionHandling("Contact Already Exists");
+            throw new ExceptionHandling("Cannot update to an Already Existing Contact");
         }
-        Contact foundContactTwo = contactExists(secondRequest.getPhoneNumber());
+        Contact foundContactTwo = contactExists(update.getOldPhoneNumber());
         if(foundContactTwo == null) {
             throw new ExceptionHandling("Contact Not Found");
         }
